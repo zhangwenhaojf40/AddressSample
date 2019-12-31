@@ -2,11 +2,14 @@ package zz.hao.sample.util
 
 import android.app.Activity
 import android.content.res.Resources
+import android.graphics.Paint
 import android.graphics.drawable.ColorDrawable
 import android.view.View
+import android.widget.EditText
 import android.widget.NumberPicker
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import zz.hao.sample.R
 import zz.hao.sample.bean.AddressBean
 import zz.hao.sample.bean.City
@@ -76,13 +79,17 @@ class DialogUtils(val bean: AddressBean,val act:Activity,val resultListent:Resul
         pickCity.descendantFocusability = NumberPicker.FOCUS_BLOCK_DESCENDANTS
         pickCountry.descendantFocusability = NumberPicker.FOCUS_BLOCK_DESCENDANTS
         //设置分割线颜色
-        setNumberPickerDividerColor(pickProvince)
-        setNumberPickerDividerColor(pickCity)
-        setNumberPickerDividerColor(pickCountry)
+        setNumberPickerDividerColor(pickProvince,ContextCompat.getColor(act,R.color.colorAccent))
+        setNumberPickerDividerColor(pickCity,ContextCompat.getColor(act,R.color.colorAccent))
+        setNumberPickerDividerColor(pickCountry,ContextCompat.getColor(act,R.color.colorAccent))
         //无限滚动
         pickProvince.wrapSelectorWheel = false
         pickCity.wrapSelectorWheel = false
         pickCountry.wrapSelectorWheel = false
+        //设置字体颜色
+        setNumberPickerTextColor(pickProvince,ContextCompat.getColor(act,R.color.colorAccent))
+        setNumberPickerTextColor(pickCity,ContextCompat.getColor(act,R.color.colorAccent))
+        setNumberPickerTextColor(pickCountry,ContextCompat.getColor(act,R.color.colorAccent))
     }
 
     private fun changCountry(position: Int) {
@@ -149,7 +156,7 @@ class DialogUtils(val bean: AddressBean,val act:Activity,val resultListent:Resul
     }
 
     //设置分割线颜色
-    private fun setNumberPickerDividerColor(numberPicker: NumberPicker) {
+    private fun setNumberPickerDividerColor(numberPicker: NumberPicker,color: Int) {
         val picker = numberPicker
         val pickerFields = NumberPicker::class.java.declaredFields
         for (pf in pickerFields) {
@@ -157,7 +164,7 @@ class DialogUtils(val bean: AddressBean,val act:Activity,val resultListent:Resul
                 pf.isAccessible = true
                 try {
                     //设置分割线的颜色值
-                    pf.set(picker, ColorDrawable(act.getResources().getColor(R.color.colorAccent)))
+                    pf.set(picker, ColorDrawable(color))
                 } catch (e: IllegalArgumentException) {
                     e.printStackTrace()
                 } catch (e: Resources.NotFoundException) {
@@ -212,6 +219,35 @@ class DialogUtils(val bean: AddressBean,val act:Activity,val resultListent:Resul
         }
         dialog.show()
     }
+
+    //设置选择器字体颜色
+    fun setNumberPickerTextColor(numberPicker: NumberPicker, color: Int): Boolean {
+        var result = false
+        val count = numberPicker.childCount
+        for (i in 0 until count) {
+            val child = numberPicker.getChildAt(i)
+            if (child is EditText) {
+                try {
+                    val selectorWheelPaintField = numberPicker.javaClass
+                        .getDeclaredField("mSelectorWheelPaint")
+                    selectorWheelPaintField.isAccessible = true
+                    (selectorWheelPaintField.get(numberPicker) as Paint).color = color
+                    child.setTextColor(color)
+                    numberPicker.invalidate()
+                    result = true
+                } catch (e: NoSuchFieldException) {
+                    e.printStackTrace()
+                } catch (e: IllegalAccessException) {
+                    e.printStackTrace()
+                } catch (e: IllegalArgumentException) {
+                    e.printStackTrace()
+                }
+
+            }
+        }
+        return result
+    }
+
     interface ResultListent{
         fun loadData(list:ArrayList<ResultBean>)
     }
