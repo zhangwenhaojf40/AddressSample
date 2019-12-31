@@ -18,8 +18,10 @@ class MainActivity : AppCompatActivity() {
         val stringJson = StreamTools.getStringJson("address.json", this)
         val gson = Gson()
         val bean = gson.fromJson<AddressBean>(stringJson, AddressBean::class.java)
+        //选择地址，回调结果
         val dialogUtils=DialogUtils(bean,this,object :DialogUtils.ResultListent{
             override fun loadData(list: ArrayList<ResultBean>) {
+                //集合中第一个元素为省，第二个为市，第三个为县
                 var mAddress = StringBuffer()
                 for (i in 0 until list.size) {
                     mAddress.append(list.get(i).area_name).append("-")
