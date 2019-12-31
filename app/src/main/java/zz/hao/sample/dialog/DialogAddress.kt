@@ -1,4 +1,4 @@
-package zz.hao.sample.util
+package zz.hao.sample.dialog
 
 import android.app.Activity
 import android.content.res.Resources
@@ -21,7 +21,7 @@ import java.lang.Exception
  * DESC:
  * Create By ZWH  On  2019/12/31 0031
  */
-class DialogUtils(val bean: AddressBean,val act:Activity,val resultListent:ResultListent ) {
+class DialogAddress(val bean: AddressBean, val act:Activity, val resultListent: ResultListent) {
     lateinit var resultArr: List<String>
     var cityList: List<City> = ArrayList()
     var countryList: List<Count> = ArrayList()

@@ -5,7 +5,8 @@ import android.os.Bundle
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_main.*
 import zz.hao.sample.bean.*
-import zz.hao.sample.util.DialogUtils
+import zz.hao.sample.dialog.DialogBottom
+import zz.hao.sample.dialog.DialogAddress
 import zz.hao.sample.util.StreamTools
 
 class MainActivity : AppCompatActivity() {
@@ -19,23 +20,30 @@ class MainActivity : AppCompatActivity() {
         val gson = Gson()
         val bean = gson.fromJson<AddressBean>(stringJson, AddressBean::class.java)
         //选择地址，回调结果
-        val dialogUtils=DialogUtils(bean,this,object :DialogUtils.ResultListent{
-            override fun loadData(list: ArrayList<ResultBean>) {
-                //集合中第一个元素为省，第二个为市，第三个为县
-                var mAddress = StringBuffer()
-                for (i in 0 until list.size) {
-                    mAddress.append(list.get(i).area_name).append("-")
+        val dialogUtils= DialogAddress(
+            bean,
+            this,
+            object : DialogAddress.ResultListent {
+                override fun loadData(list: ArrayList<ResultBean>) {
+                    //集合中第一个元素为省，第二个为市，第三个为县
+                    var mAddress = StringBuffer()
+                    for (i in 0 until list.size) {
+                        mAddress.append(list.get(i).area_name).append("-")
 //                          mAddress.append(addressList.get(i).area_id)
+                    }
+                    tvAddress.setText(mAddress.substring(0, mAddress.length - 1))
+
                 }
-                tvAddress.setText(mAddress.substring(0, mAddress.length - 1))
 
-            }
-
-        })
+            })
 
         tvAddress.setOnClickListener {
 
             dialogUtils.showDialog(tvAddress.text.split("-"))
+        }
+
+        btnBottom.setOnClickListener{
+            DialogBottom.showDialog(this)
         }
     }
 }
